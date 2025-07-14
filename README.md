@@ -48,34 +48,33 @@
 ## 监控及处理流程
 
 ```mermaid
+---
+config:
+  look: neo
+  theme: default
+---
 flowchart TD
-    A[监控开始] --> A1{检查实例排除列表}
+    A[监控开始] --> A1{查询监控排除列表}
     subgraph 异常监控
     A1 --> |已排除（处理中）| B0[继续监控记录日志]
     A1 --> |不在排除列表| B[从DCGM Server收集监控指标]
-    B --> C{LLM日志分析（自定义异常分类）}
+    B --> C{LLM日志分析<br>（自定义异常分类）}
     end
-    
     C -->|HEALTHY| F[继续监控记录日志]
-    
     C -->|OTHERS| G{是否严重错误?}
     G -->|否| H[上报CloudWatch + 继续监控]
-        
     G -->|是| L[上报CloudWatch + 执行处理策略]
     subgraph 故障处理
     L --> O[节点隔离]
     O --> P[Pod驱逐]
-    
     P --> Q{需要替换?}
     Q -->|是| R[实例替换]
     Q -->|否| S[实例重启]
     end
-
     R --> A
     S --> A
-
-    style 异常监控 font-size:16px,font-weight:bold
-    style 故障处理 fill:#ffcccc,stroke:#ff0000,stroke-width:2px,color:#333,font-size:16px,font-weight:bold
+    style 异常监控 fill:#ffffcc,stroke:#ffcc00,stroke-width:2px,color:#333,font-size:14px,font-weight:bold
+    style 故障处理 fill:#ffcccc,stroke:#ff0000,stroke-width:2px,color:#333,font-size:14px,font-weight:bold
 ```
 
 
